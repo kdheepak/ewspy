@@ -6,6 +6,7 @@ from builtins import (bytes, str, open, super, range,
 import logging
 
 import requests
+from lxml.builder import ElementMaker
 from lxml import etree
 from requests_ntlm import HttpNtlmAuth
 
@@ -13,6 +14,7 @@ from .exception import EWSException
 
 SOAP_NS = u'http://schemas.xmlsoap.org/soap/envelope/'
 SOAP_NAMESPACES = {u's': SOAP_NS}
+S = ElementMaker(namespace=SOAP_NS, nsmap=SOAP_NAMESPACES)
 
 
 class EWSSession(requests.Session):
@@ -33,7 +35,8 @@ class EWSSession(requests.Session):
         headers = headers or self.headers
         auth = auth or self.auth
 
-        body = etree.tostring(body, pretty_print=True, encoding=self.encoding)
+        root = S.Envelope(S.Body(body))
+        body = etree.tostring(root, pretty_print=True, encoding=self.encoding)
         response = super().post(url, data=body, headers=headers, auth=auth, verify=verify, **kwargs)
         response.raise_for_status()
 
