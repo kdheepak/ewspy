@@ -17,28 +17,32 @@ SOAP_NAMESPACES = {u's': SOAP_NS}
 
 class EWSSession(requests.Session):
 
-    def __init__(self, url, username=None, password=None, auth=None):
-        self.logger = logging.getLogger(__file__)
-        self.url = url
-        self.auth = auth or HttpNtlmAuth(username, password)
+    def __init__(self, url, username=None, password=None, auth=None, encoding="utf-8"):
         super().__init__()
+        self.logger = logging.getLogger(__file__)
 
-    def post(self, body, url=None, headers=None, auth=None):
+        self.url = url
+        self.encoding = encoding
+        self.headers = {"Accept": "text/xml",
+                      "Content-type": "text/xml; charset={} ".format(self.encoding)}
+
+        self.auth = auth or HttpNtlmAuth(username, password)
+
+    def post(self, body, url=None, headers=None, auth=None, verify=True, **kwargs):
         url = url or self.url
         headers = headers or self.headers
         auth = auth or self.auth
 
-        body = etree.tostring(body, pretty_print=True)
+        body = etree.tostring(body, pretty_print=True, encoding=self.encoding)
+        response = super().post(url, data=body, headers=headers, auth=auth, verify=verify, **kwargs)
+        response.raise_for_status()
 
-        response = super().post(url, data=body, headers=headers, auth=auth)
-
-        return response
+        return self._process_soap_response(response)
 
     def _process_soap_response(self, response):
         tree = etree.XML(response.content)
         fault_nodes = tree.xpath(u'//s:Fault', namespaces=SOAP_NAMESPACES)
         if fault_nodes:
             raise EWSException(etree.tostring(fault_nodes[0]))
-        response.raise_for_status()
         return tree
 
