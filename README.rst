@@ -13,10 +13,6 @@ ewspy
         :target: https://ewspy.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
 
-.. image:: https://pyup.io/repos/github/kdheepak/ewspy/shield.svg
-     :target: https://pyup.io/repos/github/kdheepak/ewspy/
-     :alt: Updates
-
 
 Exchange Web Services in Python
 
