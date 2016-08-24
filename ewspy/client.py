@@ -2,16 +2,44 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from builtins import (bytes, str, open, super, range,
                       zip, round, input, int, pow, object)
 
-from .service import EWSService
+from datetime import datetime
+import time
+from pytz import timezone, utc
+
+from .session import EWSSession
 from .exception import EWSException
+
+from . import builder
+from . import parser
 
 
 class EWSClient(object):
 
-    def __init__(self, service):
+    def __init__(self, session):
+        self._session = session
 
-        if not isinstance(service, EWSService):
-            raise EWSException('Service has to be of instance EWSService. Check documentation for more information')
+    @property
+    def roomlist(self):
+        response = self._session.post(builder.get_room_lists())
+        return parser.get_room_lists(response)
 
-        self._service = service
+    def rooms(self, email):
+        response = self._session.post(builder.get_rooms(email))
+        return parser.get_rooms(response)
 
+    def availability(self, email, starttime=None, endtime=None, tz="America/Denver"):
+        local_tz = timezone(tz)
+
+        if starttime is None:
+            now = datetime.now()
+            starttime = datetime(now.year, now.month, now.day, 0, 0, 0)
+            starttime = local_tz.localize(starttime)
+
+        if endtime is None:
+            now = datetime.now()
+            endtime = datetime(now.year, now.month, now.day + 1)
+            endtime = local_tz.localize(endtime)
+
+        response = self._session.post(builder.get_availability(email, starttime, endtime))
+
+        return response

@@ -13,8 +13,12 @@ from requests_ntlm import HttpNtlmAuth
 from .exception import EWSException
 
 SOAP_NS = u'http://schemas.xmlsoap.org/soap/envelope/'
-SOAP_NAMESPACES = {u's': SOAP_NS}
+TYPE_NS = u'http://schemas.microsoft.com/exchange/services/2006/types'
+
+SOAP_NAMESPACES = {u't': TYPE_NS, u's': SOAP_NS}
+
 S = ElementMaker(namespace=SOAP_NS, nsmap=SOAP_NAMESPACES)
+T = ElementMaker(namespace=TYPE_NS, nsmap=SOAP_NAMESPACES)
 
 
 class EWSSession(requests.Session):
@@ -35,8 +39,7 @@ class EWSSession(requests.Session):
         headers = headers or self.headers
         auth = auth or self.auth
 
-        root = S.Envelope(S.Body(body))
-        body = etree.tostring(root, pretty_print=True, encoding=self.encoding)
+        body = self._build_xml(body)
         response = super().post(url, data=body, headers=headers, auth=auth, verify=verify, **kwargs)
         response.raise_for_status()
 
@@ -49,3 +52,10 @@ class EWSSession(requests.Session):
             raise EWSException(etree.tostring(fault_nodes[0]))
         return tree
 
+    def _exchange_header(self):
+        return T.RequestServerVersion({u'Version': u'Exchange2010'})
+
+    def _build_xml(self, body):
+        root = S.Envelope(S.Header(self._exchange_header()), S.Body(body))
+        body = etree.tostring(root, pretty_print=True, encoding=self.encoding)
+        return body
