@@ -42,7 +42,7 @@ class EWSSession(requests.Session):
         body = self._build_xml(body)
         response = super().post(url, data=body, headers=headers, auth=auth, verify=verify, **kwargs)
         try:
-            response.raise_for_response()
+            response.raise_for_status()
         except Exception as e:
             print('Request Failed : {}'.format(e))
         return self._process_soap_response(response)

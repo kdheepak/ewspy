@@ -59,10 +59,10 @@ def GetUserAvailabilityRequest(email, starttime, endtime):
     return root
 
 
-def GetServerTimeZone(self):
+def GetServerTimeZones(self):
     """
     https://msdn.microsoft.com/en-us/library/office/dd899371(v=exchg.150).aspx
     """
-    M.GetServerTimeZone(
+    M.GetServerTimeZones(
         T.Ids()
     )

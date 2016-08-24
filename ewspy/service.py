@@ -19,12 +19,12 @@ class EWSService(object):
         self._session = session
 
     def GetRoomLists(self):
-        response = self._session.post(builder.get_room_lists())
-        return parser.get_room_lists(response)
+        response = self._session.post(builder.GetRoomLists())
+        return parser.GetRoomLists(response)
 
     def GetRooms(self, email):
-        response = self._session.post(builder.get_rooms(email))
-        return parser.get_rooms(response)
+        response = self._session.post(builder.GetRooms(email))
+        return parser.GetRooms(response)
 
     def GetUserAvailabilityRequest(self, email, starttime=None, endtime=None, tz="America/Denver"):
         local_tz = timezone(tz)
@@ -39,9 +39,9 @@ class EWSService(object):
             endtime = datetime(now.year, now.month, now.day + 1)
             endtime = local_tz.localize(endtime)
 
-        response = self._session.post(builder.get_availability(email, starttime, endtime))
-        return parser.get_availability(response)
+        response = self._session.post(builder.GetUserAvailabilityRequest(email, starttime, endtime))
+        return parser.GetUserAvailabilityRequest(response)
 
     def GetServerTimeZones(self):
-        response = self._session.post(builder.get_server_time_zones())
-        return parser.get_server_time_zones(response)
+        response = self._session.post(builder.GetServerTimeZones())
+        return parser.GetServerTimeZones(response)
