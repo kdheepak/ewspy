@@ -1,7 +1,7 @@
 from .soap_request import NAMESPACES, elem2dict
 
 
-def get_room_lists(root):
+def GetRoomLists(root):
 
     roomlist_list = []
     for element in root.xpath('//t:Address', namespaces=NAMESPACES):
@@ -11,7 +11,7 @@ def get_room_lists(root):
     return roomlist_list
 
 
-def get_rooms(root):
+def GetRooms(root):
 
     rooms_list = []
     for element in root.xpath('//t:Room/t:Id', namespaces=NAMESPACES):
@@ -21,7 +21,7 @@ def get_rooms(root):
     return rooms_list
 
 
-def get_availability(root):
+def GetUserAvailabilityRequest(root):
 
     event_list = []
     for element in root.xpath('//t:CalendarEvent', namespaces=NAMESPACES):

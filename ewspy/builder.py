@@ -1,11 +1,11 @@
 from .soap_request import M, T, EXCHANGE_DATETIME_FORMAT
 
 
-def get_room_lists():
+def GetRoomLists():
     return M.GetRoomLists()
 
 
-def get_rooms(roomlist_email):
+def GetRooms(roomlist_email):
     root = M.GetRooms(
         M.RoomList(
             T.EmailAddress(roomlist_email)
@@ -14,7 +14,7 @@ def get_rooms(roomlist_email):
     return root
 
 
-def get_availability(email, starttime, endtime):
+def GetUserAvailabilityRequest(email, starttime, endtime):
 
     starttime = starttime.strftime(EXCHANGE_DATETIME_FORMAT)
     endtime = endtime.strftime(EXCHANGE_DATETIME_FORMAT)
@@ -57,3 +57,12 @@ def get_availability(email, starttime, endtime):
     )
 
     return root
+
+
+def GetServerTimeZone(self):
+    """
+    https://msdn.microsoft.com/en-us/library/office/dd899371(v=exchg.150).aspx
+    """
+    M.GetServerTimeZone(
+        T.Ids()
+    )

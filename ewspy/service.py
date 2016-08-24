@@ -13,21 +13,20 @@ from . import builder
 from . import parser
 
 
-class EWSClient(object):
+class EWSService(object):
 
     def __init__(self, session):
         self._session = session
 
-    @property
-    def roomlist(self):
+    def GetRoomLists(self):
         response = self._session.post(builder.get_room_lists())
         return parser.get_room_lists(response)
 
-    def rooms(self, email):
+    def GetRooms(self, email):
         response = self._session.post(builder.get_rooms(email))
         return parser.get_rooms(response)
 
-    def availability(self, email, starttime=None, endtime=None, tz="America/Denver"):
+    def GetUserAvailabilityRequest(self, email, starttime=None, endtime=None, tz="America/Denver"):
         local_tz = timezone(tz)
 
         if starttime is None:
@@ -42,3 +41,7 @@ class EWSClient(object):
 
         response = self._session.post(builder.get_availability(email, starttime, endtime))
         return parser.get_availability(response)
+
+    def GetServerTimeZones(self):
+        response = self._session.post(builder.get_server_time_zones())
+        return parser.get_server_time_zones(response)
