@@ -41,7 +41,3 @@ class EWSService(object):
 
         response = self._session.post(builder.GetUserAvailabilityRequest(email, starttime, endtime))
         return parser.GetUserAvailabilityRequest(response)
-
-    def GetServerTimeZones(self):
-        response = self._session.post(builder.GetServerTimeZones())
-        return parser.GetServerTimeZones(response)
