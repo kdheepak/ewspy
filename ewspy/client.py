@@ -41,5 +41,4 @@ class EWSClient(object):
             endtime = local_tz.localize(endtime)
 
         response = self._session.post(builder.get_availability(email, starttime, endtime))
-
-        return response
+        return parser.get_availability(response)

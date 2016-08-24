@@ -1,30 +1,31 @@
-from .soap_request import NAMESPACES
+from .soap_request import NAMESPACES, elem2dict
 
 
 def get_room_lists(root):
 
     roomlist_list = []
     for element in root.xpath('//t:Address', namespaces=NAMESPACES):
-        roomlist = {}
-        for e in element.getchildren():
-            key = e.tag.replace(NAMESPACES['t'], '').replace('{}', '')
-            roomlist[key] = e.text
-        roomlist_list.append(roomlist)
+        roomlist_dict = elem2dict(element)
+        roomlist_list.append(roomlist_dict)
 
     return roomlist_list
 
 
 def get_rooms(root):
 
-    list_of_rooms = []
-    for element in root.xpath('//t:Room', namespaces=NAMESPACES):
-        room = {}
-        for e in element.getchildren()[0].getchildren():
-            key = e.tag.replace(NAMESPACES['t'], '').replace('{}', '')
-            room[key] = e.text
-        list_of_rooms.append(room)
+    rooms_list = []
+    for element in root.xpath('//t:Room/t:Id', namespaces=NAMESPACES):
+        room = elem2dict(element)
+        rooms_list.append(room)
 
-    return list_of_rooms
+    return rooms_list
 
 
+def get_availability(root):
 
+    event_list = []
+    for element in root.xpath('//t:CalendarEvent', namespaces=NAMESPACES):
+        event = elem2dict(element)
+        event_list.append(event)
+
+    return event_list
